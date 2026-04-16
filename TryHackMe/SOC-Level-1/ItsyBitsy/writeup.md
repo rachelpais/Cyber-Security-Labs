@@ -47,7 +47,7 @@ Two IPs appeared:
 
 
 The low share of traffic from `192.166.65.54` made it worth investigating first. I used the **+** button next to it to filter the view down to just that machine's activity.
-With `.54` filtered, I also added `user_agent` as a selected field. The `user_agent` identifies what software made each HTTP request. Normal user traffic comes through as a browser string like `Mozilla/5.0...`. What showed up here was `bitsadmin`. Therefore, flagging IP address: `192.166.65.54` is suspicious.
+With `.54` filtered, I also added `user_agent` as a selected field. The `user_agent` identifies what software made each HTTP request. What showed up here was `bitsadmin`. Therefore, flagging IP address: `192.166.65.54` is suspicious.
 <img width="1913" height="673" alt="Pasted image 20260416130710" src="https://github.com/user-attachments/assets/7c860736-f08d-4065-a6c1-5ba826a04acb" />
 
 
