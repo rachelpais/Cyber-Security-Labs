@@ -1,4 +1,4 @@
-# TryHackMe — ItsyBitsy
+# TryHackMe: ItsyBitsy
 
 **Platform:** TryHackMe  
 **Path:** SOC Level 1 > SIEM  
