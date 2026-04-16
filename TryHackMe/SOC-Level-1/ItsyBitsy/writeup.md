@@ -33,29 +33,29 @@ The default time filter showed no results, so the first step was setting the dat
 
 **1,482 events** were returned. The 9th of March had the highest activity with 674 events logged on that day alone.
 
+<img width="1907" height="829" alt="Pasted image 20260416113033" src="https://github.com/user-attachments/assets/382f9b2e-0723-4843-b751-396b7032483b" />
 
 ---
 
-### Q2: What is the IP address associated with the suspected user?
+### Q2: What is the IP associated with the suspected user in the logs?
 
 I added `source_ip` as a selected field to get it as a column in the results table, then clicked the field name to see the value breakdown.
 
 Two IPs appeared:
 
-| IP | Share of traffic |
-|---|---|
-| 192.166.65.52 | 99.6% |
-| 192.166.65.54 | 0.4% |
+<img width="453" height="479" alt="Pasted image 20260416114116" src="https://github.com/user-attachments/assets/7cae4206-10ab-451e-88fb-75c226861fa5" />
+
 
 The low share of traffic from `192.166.65.54` made it worth investigating first. I used the **+** button next to it to filter the view down to just that machine's activity.
+With `.54` filtered, I also added `user_agent` as a selected field. The `user_agent` identifies what software made each HTTP request. Normal user traffic comes through as a browser string like `Mozilla/5.0...`. What showed up here was `bitsadmin`. Therefore, flagging IP address: `192.166.65.54` is suspicious.
+<img width="1913" height="673" alt="Pasted image 20260416130710" src="https://github.com/user-attachments/assets/7c860736-f08d-4065-a6c1-5ba826a04acb" />
+
 
 **Answer: `192.166.65.54`**
 
 ---
 
-### Q3: What Windows binary was used to download a file from the C2 server?
-
-With `.54` filtered, I added `user_agent` as a selected field. The `user_agent` identifies what software made each HTTP request. Normal user traffic comes through as a browser string like `Mozilla/5.0...`. What showed up here was `bitsadmin`.
+### Q3: The user’s machine used a legit windows binary to download a file from the C2 server. What is the name of the binary?
 
 **BITSAdmin** is a Windows command-line tool that manages BITS (Background Intelligent Transfer Service), which Windows uses to handle background file transfers. It is a legitimate, signed Microsoft binary, which is exactly why attackers use it. In this context it is known as a LOLBin (Living off the Land Binary) a built-in OS tool repurposed for malicious activity.
 
@@ -75,9 +75,13 @@ MITRE ATT&CK reference: [**T1197 - BITS Jobs**](https://attack.mitre.org/techniq
 
 ---
 
-### Q4: What file-sharing site did the infected machine connect to?
+### Q4: The infected machine connected with a famous filesharing site in this period, which also acts as a C2 server used by the malware authors to communicate. What is the name of the filesharing site?
 
+The question is asking where did the infected machine sent its bitsadmin requests to. In the logs, every HTTP request has a host field ( the destination website the machine connected to).
 The `host` field in each log entry records the destination website. With IP address:`192.166.65.54 ` filtered and `host` added as a selected field, the outbound connection went to **Pastebin** (`pastebin.com`).
+
+<img width="1346" height="487" alt="Pasted image 20260416131713" src="https://github.com/user-attachments/assets/adabe04f-38b9-4223-9622-983935c5d7bc" />
+
 
 Pastebin is a legitimate site used to share text snippets, which is exactly why it gets abused for C2 staging. It is rarely blocked by corporate firewalls, requires no attacker infrastructure to maintain, and traffic to it looks like normal user activity. Attackers host their payloads there as plain text pastes and have the malware fetch them over a standard HTTPS request.
 
@@ -85,11 +89,13 @@ Pastebin is a legitimate site used to share text snippets, which is exactly why 
 
 ---
 
-### Q5: What is the full URL of the C2 the infected host connected to?
+### Q5: What is the full URL of the C2 to which the infected host is connected?
 
 `url` was not available as a field in this dataset, so I added `uri` instead. URI (Uniform Resource Identifier) captures the path portion of the request, in this case `/yTg0Ah6a`.
 
 Combined with the host from the previous question, the full URL is:
+<img width="1888" height="751" alt="Pasted image 20260416132843" src="https://github.com/user-attachments/assets/17c17de6-84cb-4e5c-b43f-80e85d2afecb" />
+
 
 **Answer: `https://pastebin.com/yTg0Ah6a`**
 
@@ -97,7 +103,10 @@ Combined with the host from the previous question, the full URL is:
 
 ### Q6: A file was accessed on the filesharing site. What is the name of the file accessed?
 
-To find out the name of the file, I simply copy the full URL obtained from the previous task `https://pastebin.com/yTg0Ah6a` and pasted on the search bar. 
+To find out the name of the file, I simply copied the full URL obtained from the previous task `https://pastebin.com/yTg0Ah6a` and pasted on the search bar. 
+
+<img width="1383" height="674" alt="Pasted image 20260416133558" src="https://github.com/user-attachments/assets/b87ff80e-637f-46e1-b563-f1aac76d09b7" />
+
 
 **Answer: `secret.txt`**
 
@@ -119,6 +128,7 @@ Navigating to `https://pastebin.com/raw/yTg0Ah6a` also contained the flagged to 
 | Attack method | `bitsadmin` used to beacon to C2 (T1197) |
 | C2 platform | Pastebin (`pastebin.com`) |
 | Payload URL | `https://pastebin.com/yTg0Ah6a` |
+| File Accessed | secret.txt'
 | Log period investigated | March 2022 (1,482 events) |
 
 ---
