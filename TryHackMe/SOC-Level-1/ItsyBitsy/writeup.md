@@ -128,7 +128,7 @@ Navigating to `https://pastebin.com/raw/yTg0Ah6a` also contained the flagged to 
 | Attack method | `bitsadmin` used to beacon to C2 (T1197) |
 | C2 platform | Pastebin (`pastebin.com`) |
 | Payload URL | `https://pastebin.com/yTg0Ah6a` |
-| File Accessed | secret.txt'
+| File Accessed | `secret.txt` |
 | Log period investigated | March 2022 (1,482 events) |
 
 ---
