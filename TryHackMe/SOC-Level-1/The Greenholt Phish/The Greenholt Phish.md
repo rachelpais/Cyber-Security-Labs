@@ -4,6 +4,7 @@
 **Category:** Phishing Analysis  
 **Difficulty:** Easy  
 
+
 ## Scenario
 
 A sales executive at Greenholt PLC received a suspicious email from a known customer. The email contained a generic greeting, an unexpected request for a money transfer, and an unsolicited attachment. The behaviour didn't match the customer's usual communication style, so it was escalated to the SOC for investigation.
@@ -12,7 +13,11 @@ A sales executive at Greenholt PLC received a suspicious email from a known cust
 
 ## Question 1: What is the Transfer Reference Number listed in the Subject line?
 
-![Subject line]([[Pasted image 20260423103816.png]])
+<img width="1856" height="868" alt="Pasted image 20260423103722" src="https://github.com/user-attachments/assets/b46ea673-2980-4fbd-98bd-81b208915ed0" />
+
+
+<img width="881" height="297" alt="Pasted image 20260423103816" src="https://github.com/user-attachments/assets/99640b2f-91cf-4b5d-8e1f-037ffbba1985" />
+
 
 The subject line reads: `webmaster@redacted.org your: Transfer Reference Number:(09674321)`
 
@@ -22,7 +27,8 @@ The subject line reads: `webmaster@redacted.org your: Transfer Reference Number:
 
 ## Question 2: What is the display name of the sender?
 
-![Email headers]([[Pasted image 20260423103855.png]])
+<img width="392" height="80" alt="Pasted image 20260423103855" src="https://github.com/user-attachments/assets/e62d1b31-6c2a-4c8d-ac5a-d06f9084bcfa" />
+
 
 **Answer:** `Mr. James Jackson`
 
@@ -30,7 +36,7 @@ The subject line reads: `webmaster@redacted.org your: Transfer Reference Number:
 
 ## Question 3: What is the sender's email address?
 
-From the same headers:
+From the same headers
 
 **Answer:** `info@mutawamarine.com`
 
@@ -38,7 +44,9 @@ From the same headers:
 
 ## Question 4: What email address will receive a reply to this email?
 
-![Reply-To header]([[Pasted image 20260423104543.png]])
+<img width="873" height="130" alt="Pasted image 20260423104543" src="https://github.com/user-attachments/assets/c0724b18-d81e-49ca-be69-27508485973e" />
+
+
 
 The Reply-To header is different from the From address:
 
@@ -53,7 +61,8 @@ They look almost identical, but the domain is different. `mutawamarine.com` vs `
 
 ## Question 5: What is the originating IP address?
 
-![Received headers]([[Pasted image 20260423105041.png]])
+<img width="1112" height="158" alt="Pasted image 20260423105041" src="https://github.com/user-attachments/assets/8290983c-43a1-415e-ba6b-10e695bc402e" />
+
 
 Received headers show the path an email took from sender to recipient. They are read bottom to top, with the oldest hop at the bottom.
 
@@ -70,7 +79,8 @@ The originating IP is the one in the bottom header, since that is where the emai
 
 Running a lookup on `192.119.71.157` via [ipinfo.io](https://ipinfo.io):
 
-![IPinfo results]([[Pasted image 20260423105823.png]])
+<img width="1835" height="867" alt="Pasted image 20260423105823" src="https://github.com/user-attachments/assets/90fd809d-96a6-4d7a-a6be-8d3f49dab1f8" />
+
 
 The IP belongs to **Hostwinds LLC**, a cheap hosting provider based in Dallas, Texas. The attacker most likely rented a throwaway VPS to send the phishing email rather than spoofing the IP outright. 
 
@@ -84,7 +94,9 @@ The Return-Path from the headers is `info@mutawamarine.com`, so the domain to ch
 
 Running an SPF lookup on [MXToolbox](https://mxtoolbox.com/spf.aspx):
 
-![SPF record]([[Pasted image 20260423110723.png]])
+<img width="1449" height="777" alt="Pasted image 20260423110723" src="https://github.com/user-attachments/assets/74c1560a-1f3d-4dcc-8bf9-a159a0b69d07" />
+
+
 
 **Answer:** `v=spf1 include:spf.protection.outlook.com -all`
 
@@ -100,7 +112,8 @@ The email came from `192.119.71.157` (Hostwinds), which is not an Office 365 ser
 
 ## Question 8: What is the DMARC record for the Return-Path domain?
 
-![DMARC record]([[Pasted image 20260423111228.png]])
+<img width="1452" height="825" alt="Pasted image 20260423111228" src="https://github.com/user-attachments/assets/24f63583-2d3f-4886-a5a2-677aafa4e491" />
+
 
 **Answer:** `v=DMARC1; p="quarantine; fo=1`
 `v=DMARC1`: declares this as a DMARC record, nothing more
@@ -111,7 +124,8 @@ The email came from `192.119.71.157` (Hostwinds), which is not an Office 365 ser
 
 ## Question 9: What is the file name of the attachment?
 
-![Attachment]([[Pasted image 20260423111401.png]])
+<img width="884" height="84" alt="Pasted image 20260423111401" src="https://github.com/user-attachments/assets/fe7569f5-f0da-4266-9c1d-6c62eacb0d0f" />
+
 
 **Answer:** `SWT_#09674321____PDF__.CAB`
 
@@ -121,6 +135,9 @@ The email came from `192.119.71.157` (Hostwinds), which is not an Office 365 ser
 
 After downloading the file to the Desktop, the hash was calculated using the terminal:
 
+<img width="1856" height="873" alt="Pasted image 20260423112012" src="https://github.com/user-attachments/assets/3ee178f8-0d50-4d88-aca1-d36b6e9654c9" />
+
+
 ```bash
 cd Desktop
 sha256sum SWT_#09674321____PDF__.CAB
@@ -128,7 +145,8 @@ sha256sum SWT_#09674321____PDF__.CAB
 
 Pressed tab to autocomplete the file name in order to avoid errors.
 
-![SHA256 result]([[Pasted image 20260423112132.png]])
+<img width="1696" height="777" alt="Pasted image 20260423112132" src="https://github.com/user-attachments/assets/35bcf866-05d4-4102-8a82-777ff8dbad99" />
+
 
 **Answer:** `2e91c533615a9bb8929ac4bb76707b2444597ce063d84a4b33525e25074fff3f`
 
@@ -138,8 +156,11 @@ Pressed tab to autocomplete the file name in order to avoid errors.
 
 The SHA256 hash was submitted to [VirusTotal](https://www.virustotal.com):
 
-![VirusTotal results]([[Pasted image 20260423112351.png]])
-![VirusTotal file details]([[Pasted image 20260423112408.png]])
+<img width="1847" height="871" alt="Pasted image 20260423112351" src="https://github.com/user-attachments/assets/f101a3b5-6572-45d6-8c37-6aab295fad36" />
+
+<img width="1843" height="869" alt="Pasted image 20260423112408" src="https://github.com/user-attachments/assets/2b1d29b7-74ea-414c-92ec-587a2e39593e" />
+
+
 
 The file type was identified as RAR.
 
@@ -157,3 +178,14 @@ What is the actual file type of the attachment?
 ## Summary
 
 The email shows multiple phishing indicators: a mismatched Reply-To domain, an originating IP traced to a cheap hosting provider rather than the legitimate sending infrastructure, an SPF hard fail, and an attachment flagged by VirusTotal. The Transfer Reference Number in the subject line and the urgent request for a money transfer are consistent with a business email compromise (BEC) attempt targeting the finance function.
+
+## Tools used for this room
+
+| Tool | Purpose |
+|------|---------|
+| ipinfo.io | IP lookup on `192.119.71.157` to identify the owner |
+| MXToolbox | SPF and DMARC record lookups on `mutawamarine.com` |
+| Linux terminal | Used `sha256sum` to hash the attachment file |
+| VirusTotal | Submitted the SHA256 hash of the attachment to check for malicious detections |
+
+
